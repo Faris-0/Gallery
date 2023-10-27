@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DATE_ADDED"
+        android:textSize="@dimen/_14ssp"
+        android:layout_margin="@dimen/_3sdp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/dPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_photo"
+        tools:itemCount="2" />
+</LinearLayout>
