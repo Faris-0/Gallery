@@ -3,6 +3,7 @@ package com.yuuna.gallery;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -25,7 +26,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -38,46 +38,42 @@ public class MainActivity extends Activity {
         if (permission != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= 33) {
                 String[] PERMISSIONS_STORAGE = {
-                        android.Manifest.permission.READ_MEDIA_IMAGES
+                        Manifest.permission.READ_MEDIA_IMAGES
                 };
                 ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, 1);
             } else {
                 String[] PERMISSIONS_STORAGE = {
-                        android.Manifest.permission.READ_EXTERNAL_STORAGE
+                        Manifest.permission.READ_EXTERNAL_STORAGE
                 };
                 ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, 1);
             }
         }
-
-        loadAllPhoto();
     }
 
     private void loadAllPhoto() {
         final String[] columns = { MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED };
         final String orderBy = MediaStore.Images.Media.DATE_ADDED + " DESC";
-        //Stores all the images from the gallery in Cursor
+        // Stores all the images from the gallery in Cursor
         Cursor cursor = getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
                 null, orderBy);
-        //Total number of images
+        // Total number of images
         int count = cursor.getCount();
 
-        //Create an array to store path to all the images
+        // Create an array to store path to all the images
         String[] data = new String[count];
         String[] date = new String[count];
 
         ArrayList<JSONObject> jsonObjectArrayList = new ArrayList<>();
         ArrayList<String> dateArrayList = new ArrayList<>();
 
-        // Mboh lah
         ArrayList<GalleryData> galleryDataArrayList = new ArrayList<>();
-        ArrayList<PhotoData> photoDataArrayList = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
             cursor.moveToPosition(i);
             int dataColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             int dateColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
-            //Store the path of the image
+            // Store the path of the image
             data[i] = cursor.getString(dataColumnIndex);
             date[i] = cursor.getString(dateColumnIndex);
             //
@@ -91,10 +87,8 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-//            Log.i("PATH", cursor.getString(dataColumnIndex));
 
-            // MBOH LAH
-//            photoDataArrayList.add(new PhotoData(cursor.getString(dataColumnIndex)));
+            // Store the path of the image and date
             galleryDataArrayList.add(new GalleryData(sDate, new PhotoData(cursor.getString(dataColumnIndex))));
         }
         // The cursor should be freed up after use with close()
@@ -136,74 +130,34 @@ public class MainActivity extends Activity {
 //        rvPhoto.setLayoutManager(new CustomGridLayoutManager(this, calculateNoOfColumns(140)));
 //        rvPhoto.setAdapter(new PhotoAdapter(jsonObjectArrayList, this));
 
-        //
-        HashMap<String, ArrayList<GalleryData>> ggggg = new HashMap<String, ArrayList<GalleryData>>();
+        // Reference Link
+        // https://stackoverflow.com/questions/39204438/grouping-json-response-with-keys-in-java-android-studio
+        HashMap<String, ArrayList<GalleryData>> hashMap = new HashMap<>();
         for (int i = 0; i < galleryDataArrayList.size(); i++) {
-            String dateaa = galleryDataArrayList.get(i).getDate();
-
-            if (ggggg.containsKey(dateaa)) {
-                ggggg.get(dateaa).add(galleryDataArrayList.get(i));
-            } else {
+            String byDate = galleryDataArrayList.get(i).getDate();
+            if (hashMap.containsKey(byDate)) hashMap.get(byDate).add(galleryDataArrayList.get(i));
+            else {
                 ArrayList<GalleryData> emptyList = new ArrayList<>();
                 emptyList.add(galleryDataArrayList.get(i));
-                ggggg.put(dateaa, emptyList);
+                hashMap.put(byDate, emptyList);
             }
         }
-        // LINK NYA
-        // https://stackoverflow.com/questions/39204438/grouping-json-response-with-keys-in-java-android-studio
         ObjectMapper mapper = new ObjectMapper();
         StringWriter result = new StringWriter();
         try {
-            mapper.writeValue(result, ggggg);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String json = String.valueOf(result);
-        try {
-            JSONObject jsonObject = new JSONObject(json);
+            mapper.writeValue(result, hashMap);
+            JSONObject jsonObject = new JSONObject(String.valueOf(result));
             RecyclerView rvPhoto = findViewById(R.id.mPhoto);
             rvPhoto.setLayoutManager(new CustomLinearLayoutManager(this));
             rvPhoto.setAdapter(new DateExAdapter(jsonObject, this, dateArrayList));
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        ///
 
         // ommiting other recycler view set up, such as adapter and Layout manager set up ..
 //        ViewTreeObserver viewTreeObserver = rvPhoto.getViewTreeObserver();
 //        viewTreeObserver.addOnGlobalLayoutListener(() -> calculateCellSize(rvPhoto));
     }
-
-    //
-    private HashMap<String, List<JSONObject>> groupDataIntoHashMap(List<JSONObject> listOfPojosOfJsonArray) {
-
-        HashMap<String, List<JSONObject>> groupedHashMap = new HashMap<>();
-
-        for (JSONObject pojoOfJsonArray : listOfPojosOfJsonArray) {
-
-            String hashMapKey = null;
-            try {
-                hashMapKey = pojoOfJsonArray.getString("date");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            if (groupedHashMap.containsKey(hashMapKey)) {
-                // The key is already in the HashMap; add the pojo object
-                // against the existing key.
-                groupedHashMap.get(hashMapKey).add(pojoOfJsonArray);
-            } else {
-                // The key is not there in the HashMap; create a new key-value pair
-                List<JSONObject> list = new ArrayList<>();
-                list.add(pojoOfJsonArray);
-                groupedHashMap.put(hashMapKey, list);
-            }
-        }
-
-
-        return groupedHashMap;
-    }
-    //
 
     public int calculateNoOfColumns(float columnWidthDp) { // For example columnWidthdp=180
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();

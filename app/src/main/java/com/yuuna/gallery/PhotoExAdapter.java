@@ -40,6 +40,17 @@ public class PhotoExAdapter extends RecyclerView.Adapter<PhotoExAdapter.Holder> 
         try {
             Glide.with(mContext).load(jsonArrayData.getJSONObject(position).getJSONObject("photoData").getString("photo")).centerCrop().into(holder.ivPhoto);
             holder.ivPhoto.setOnClickListener(v -> {
+                // Delete file
+//                try {
+//                    File file = new File(jsonArrayData.getJSONObject(position).getJSONObject("photoData").getString("photo"));
+//                    if (file.exists()) {
+//                        Log.d("ADA?", "YA");
+//                        if (file.delete()) Log.d("HAPUS?", "YA");
+//                        else Log.d("HAPUS?", "TIDAK");
+//                    } else Log.d("ADA?", "TIDAK");
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
                 try {
                     photoDialog(jsonArrayData.getJSONObject(position).getJSONObject("photoData").getString("photo"));
                 } catch (JSONException e) {
