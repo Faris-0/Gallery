@@ -16,11 +16,13 @@ android {
 
     buildTypes {
         release {
+            resValue 'string', 'app_name', 'Gallery'
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
+            resValue 'string', 'app_name', 'Gallery'
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

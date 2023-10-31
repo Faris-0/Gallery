@@ -38,11 +38,14 @@ public class PhotoExAdapter extends RecyclerView.Adapter<PhotoExAdapter.Holder> 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
         try {
-            Glide.with(mContext).load(jsonArrayData.getJSONObject(position).getJSONObject("photoData").getString("photo")).centerCrop().into(holder.ivPhoto);
+            String photo = jsonArrayData.getJSONObject(position).getJSONObject("photoData").getString("photo");
+            Glide.with(mContext).load(photo).centerCrop().into(holder.ivPhoto);
             holder.ivPhoto.setOnClickListener(v -> {
+                photoDialog(photo);
+
                 // Delete file
 //                try {
-//                    File file = new File(jsonArrayData.getJSONObject(position).getJSONObject("photoData").getString("photo"));
+//                    File file = new File(photo);
 //                    if (file.exists()) {
 //                        Log.d("ADA?", "YA");
 //                        if (file.delete()) Log.d("HAPUS?", "YA");
@@ -51,11 +54,6 @@ public class PhotoExAdapter extends RecyclerView.Adapter<PhotoExAdapter.Holder> 
 //                } catch (JSONException e) {
 //                    e.printStackTrace();
 //                }
-                try {
-                    photoDialog(jsonArrayData.getJSONObject(position).getJSONObject("photoData").getString("photo"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             });
         } catch (JSONException e) {
             e.printStackTrace();

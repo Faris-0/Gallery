@@ -45,14 +45,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.Holder> impl
     @Override
     public void onBindViewHolder(Holder holder, int position) {
         try {
-            Glide.with(mContext).load(listPhoto.get(position).getString("data")).centerCrop().into(holder.ivPhoto);
-            holder.ivPhoto.setOnClickListener(v -> {
-                try {
-                    photoDialog(listPhoto.get(position).getString("data"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            });
+            String data = listPhoto.get(position).getString("data");
+            Glide.with(mContext).load(data).centerCrop().into(holder.ivPhoto);
+            holder.ivPhoto.setOnClickListener(v -> photoDialog(data));
         } catch (JSONException e) {
             e.printStackTrace();
         }
