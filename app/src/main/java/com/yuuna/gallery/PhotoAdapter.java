@@ -94,12 +94,9 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.Holder> impl
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence charSequence) {
-
                 String searchString = charSequence.toString().toLowerCase().trim();
-
-                if (searchString.isEmpty()) {
-                    listPhoto = jsonObjectDataList;
-                } else {
+                if (searchString.isEmpty()) listPhoto = jsonObjectDataList;
+                else {
                     ArrayList<JSONObject> tempFilteredList = new ArrayList<>();
                     for (JSONObject jsonObject : jsonObjectDataList) {
                         try {
@@ -112,7 +109,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.Holder> impl
                     }
                     listPhoto = tempFilteredList;
                 }
-
                 FilterResults filterResults = new FilterResults();
                 filterResults.values = listPhoto;
                 return filterResults;

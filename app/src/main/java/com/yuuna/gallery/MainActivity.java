@@ -34,19 +34,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        int permission = ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= 33) {
-                String[] PERMISSIONS_STORAGE = {
-                        Manifest.permission.READ_MEDIA_IMAGES
-                };
-                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, 1);
-            } else {
-                String[] PERMISSIONS_STORAGE = {
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                };
-                ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, 1);
-            }
+            String[] PERMISSIONS_STORAGE = { Build.VERSION.SDK_INT >= 33 ? Manifest.permission.READ_MEDIA_IMAGES : Manifest.permission.READ_EXTERNAL_STORAGE };
+            ActivityCompat.requestPermissions(this, PERMISSIONS_STORAGE, 1);
         }
     }
 
@@ -54,9 +45,8 @@ public class MainActivity extends Activity {
         final String[] columns = { MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED };
         final String orderBy = MediaStore.Images.Media.DATE_ADDED + " DESC";
         // Stores all the images from the gallery in Cursor
-        Cursor cursor = getContentResolver().query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
-                null, orderBy);
+        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null, null, orderBy);
+        if (cursor == null) return;
         // Total number of images
         int count = cursor.getCount();
 
@@ -104,8 +94,8 @@ public class MainActivity extends Activity {
         for (int i = 0; i < dateArrayList.size(); i++) {
             try {
                 Date cDate = new SimpleDateFormat("dd MMMM yyyy").parse(dateArrayList.get(i));
-                long ms = cDate.getTime();
-                cDateArrayList.add(ms/1000L);
+                Long ms = cDate.getTime();
+                cDateArrayList.add(ms / 1000L);
             } catch (ParseException e) {
                 e.printStackTrace();
             }

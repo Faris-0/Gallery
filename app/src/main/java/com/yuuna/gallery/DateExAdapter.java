@@ -38,13 +38,9 @@ public class DateExAdapter extends RecyclerView.Adapter<DateExAdapter.Holder> {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         int value3 = (int) mContext.getResources().getDimension(com.intuit.sdp.R.dimen._3sdp);
         int value25 = (int) mContext.getResources().getDimension(com.intuit.sdp.R.dimen._25sdp);
-        if (position != 0) {
-            params.setMargins(value3, value25, value3, value3);
-            holder.tvDate.setLayoutParams(params);
-        } else {
-            params.setMargins(value3, value3, value3, value3);
-            holder.tvDate.setLayoutParams(params);
-        }
+        if (position != 0) params.setMargins(value3, value25, value3, value3);
+        else params.setMargins(value3, value3, value3, value3);
+        holder.tvDate.setLayoutParams(params);
         holder.tvDate.setText(dateDataList.get(position));
         try {
             JSONArray jsonArray = jsonObjectData.getJSONArray(dateDataList.get(position));
