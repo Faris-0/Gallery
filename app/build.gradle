@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    namespace 'com.yuuna.gallery'
-    compileSdk 34
+    namespace = 'com.yuuna.gallery'
+    compileSdk = 36
 
     defaultConfig {
         applicationId "com.yuuna.gallery"
-        minSdk 21
-        targetSdk 34
+        minSdk = 21
+        targetSdk = 34
         versionCode 1
         versionName "1.0"
     }
@@ -17,20 +17,20 @@ android {
     buildTypes {
         release {
             resValue 'string', 'app_name', 'Gallery'
-            shrinkResources true
-            minifyEnabled true
+            shrinkResources = true
+            minifyEnabled = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             resValue 'string', 'app_name', 'Gallery'
-            shrinkResources true
-            minifyEnabled true
+            shrinkResources = false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 }
 

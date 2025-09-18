@@ -2,25 +2,29 @@ package com.yuuna.gallery;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class DateAdapter extends RecyclerView.Adapter<DateAdapter.Holder> {
 
-    private ArrayList<JSONObject> jsonObjectDataList;
+    private JSONObject jsonObjectData;
     private ArrayList<String> dateDataList;
     private Context mContext;
 
-    public DateAdapter(ArrayList<JSONObject> jsonObjectArrayList, Context context, ArrayList<String> dateArrayList) {
-        this.jsonObjectDataList = jsonObjectArrayList;
+    public DateAdapter(JSONObject jsonObject, Context context, ArrayList<String> dateArrayList) {
+        this.jsonObjectData = jsonObject;
         this.mContext = context;
         this.dateDataList = dateArrayList;
     }
@@ -32,21 +36,35 @@ public class DateAdapter extends RecyclerView.Adapter<DateAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        String sDate = dateDataList.get(position);
+        holder.tvDate.setLayoutParams(getDateMarginParams(position));
         holder.tvDate.setText(dateDataList.get(position));
-
-        RecyclerView rvPhoto = holder.itemView.findViewById(R.id.dPhoto);
-        rvPhoto.setLayoutManager(new CustomGridLayoutManager(mContext, calculateNoOfColumns(140)));
-        PhotoAdapter pa = new PhotoAdapter(jsonObjectDataList, mContext);
-        rvPhoto.setAdapter(pa);
-        pa.getFilter().filter(sDate);
+        String key = dateDataList.get(position);
+        if (jsonObjectData.has(key)) {
+            try {
+                JSONArray jsonArray = jsonObjectData.getJSONArray(dateDataList.get(position));
+                RecyclerView rvPhoto = holder.itemView.findViewById(R.id.dPhoto);
+                rvPhoto.setLayoutManager(new CustomGridLayoutManager(mContext, calculateNoOfColumns(140)));
+                rvPhoto.setAdapter(new PhotoAdapter(jsonArray, mContext));
+            } catch (JSONException e) {
+                Log.e("DateAdapter", "Failed to bind photo list for date: " + dateDataList.get(position), e);
+            }
+        } else {
+            Log.w("DateAdapter", "Missing key in JSON: " + key);
+        }
     }
 
-    public int calculateNoOfColumns(float columnWidthDp) { // For example columnWidthdp=180
+    private LinearLayout.LayoutParams getDateMarginParams(int position) {
+        int value3 = (int) mContext.getResources().getDimension(com.intuit.sdp.R.dimen._3sdp);
+        int value25 = (int) mContext.getResources().getDimension(com.intuit.sdp.R.dimen._25sdp);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(value3, position != 0 ? value25 : value3, value3, value3);
+        return params;
+    }
+
+    public int calculateNoOfColumns(float columnWidthDp) {
         DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
         float screenWidthDp = displayMetrics.widthPixels / displayMetrics.density;
-        int noOfColumns = (int) (screenWidthDp / columnWidthDp + 0.5); // +0.5 for correct rounding to int.
-        return noOfColumns;
+        return (int) (screenWidthDp / columnWidthDp + 0.5);
     }
 
     @Override
